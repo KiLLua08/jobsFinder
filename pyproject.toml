@@ -1,0 +1,17 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Django backend for JobsFinder with Scraping and DL modules"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.0",
+    "psycopg2-binary",
+    "selenium",
+    "beautifulsoup4",
+    "transformers",
+    "torch",
+]
+
+[tool.uv]
+dev-dependencies = []
