@@ -1,13 +1,13 @@
 # Module Task Lists
 
 ## Web Scraping Module (Selenium)
-- [ ] Setup Selenium WebDriver (Chrome/Gecko)
-- [ ] Implement base scraper class
-- [ ] Create specific scraper for Target Site A
+- [x] Setup Selenium WebDriver (Chrome/Gecko)
+- [x] Implement base scraper class
+- [x] Create specific scraper for LinkedIn
 - [ ] Create specific scraper for Target Site B
-- [ ] Handle pagination and dynamic content
-- [ ] Save scraped data to database (Job models)
-- [ ] Implement rate limiting and anti-detection measures
+- [x] Handle pagination and dynamic content
+- [x] Save scraped data to database (Job models)
+- [x] Implement rate limiting and anti-detection measures
 
 ## Deep Learning Module (Transformers)
 - [ ] Setup Hugging Face Transformers pipeline
