@@ -141,6 +141,14 @@ class BaseScraper(ABC):
         """
         pass
 
+    def enrich_jobs(self, jobs):
+        """Hook to fetch additional details (like full descriptions) for each job.
+        
+        Child classes can override this to navigate to individual job links
+        and extract more text. By default, it just returns the jobs as-is.
+        """
+        return jobs
+
     # ── Core Scraping Logic ──────────────────────────────────────
 
     def _fetch_page(self, url):
@@ -208,12 +216,16 @@ class BaseScraper(ABC):
                 # Parse job cards from the HTML
                 jobs = self.parse_job_cards(page_source)
                 logger.info(f"Found {len(jobs)} jobs on page {page}")
-                all_jobs.extend(jobs)
 
                 # If we got 0 jobs, we've probably hit the last page
                 if not jobs:
                     logger.info("No more jobs found, stopping pagination")
                     break
+
+                # Fetch extra details (like full descriptions) for these jobs
+                jobs = self.enrich_jobs(jobs)
+
+                all_jobs.extend(jobs)
 
                 # Random delay between pages (anti-detection)
                 if page < self.max_pages:
