@@ -5,7 +5,7 @@ class JobListing(models.Model):
     company = models.CharField(max_length=255)
     description = models.TextField() # This is for our Deep Learning model later
     location = models.CharField(max_length=255, null=True, blank=True)
-    link = models.URLField(unique=True) # unique=True prevents duplicate scrapes
+    link = models.URLField(max_length=1000, unique=True) # unique=True prevents duplicate scrapes
     date_scraped = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

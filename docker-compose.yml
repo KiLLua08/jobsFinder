@@ -12,9 +12,9 @@ services:
       - db
       - chrome
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=jobs
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=1234r
       - POSTGRES_HOST=db
       - SELENIUM_HOST=chrome
 
@@ -23,9 +23,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=jobs
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=1234r
 
   chrome:
     image: selenium/standalone-chrome:latest
