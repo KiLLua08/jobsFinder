@@ -109,3 +109,42 @@ class LinkedInScraper(BaseScraper):
                 continue
 
         return jobs
+
+    def enrich_jobs(self, jobs):
+        """Navigate to each job's dedicated page to scrape the full description."""
+        import urllib.request
+        from scraping.utils.anti_detection import get_random_user_agent, random_delay
+
+        for i, job in enumerate(jobs):
+            try:
+                # Add a delay between resolving each job URL
+                delay = random_delay(1, 3)
+                logger.info(f"Fetching description {i+1}/{len(jobs)} for {job['title']} (waited {delay:.1f}s)")
+                
+                # We use raw urllib here because LinkedIn's bot detection 
+                # aggressively blocks Selenium Headless browsers on individual job pages,
+                # but often allows raw HTTP requests with a normal User-Agent!
+                req = urllib.request.Request(
+                    job["link"], 
+                    headers={'User-Agent': get_random_user_agent()}
+                )
+                
+                with urllib.request.urlopen(req, timeout=10) as response:
+                    page_source = response.read().decode('utf-8')
+                    
+                soup = BeautifulSoup(page_source, "html.parser")
+                
+                # The description block in public LinkedIn jobs
+                desc_div = soup.find("div", class_="show-more-less-html__markup")
+                if not desc_div:
+                    desc_div = soup.find("div", class_="description__text")
+                    
+                if desc_div:
+                    job["description"] = desc_div.get_text(separator="\n", strip=True)
+                else:
+                    logger.warning(f"Could not find description block for {job['link']}")
+                    
+            except Exception as e:
+                logger.error(f"Failed to fetch description for {job['link']}: {e}")
+                
+        return jobs

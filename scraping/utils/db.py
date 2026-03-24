@@ -33,9 +33,9 @@ def save_jobs_to_db(jobs_data):
 
     for job in jobs_data:
         try:
-            _, was_created = JobListing.objects.get_or_create(
+            _, was_created = JobListing.objects.update_or_create(
                 link=job["link"],  # Look up by this field
-                defaults={         # Only used if creating a new record
+                defaults={         # Update or set these fields
                     "title": job.get("title", ""),
                     "company": job.get("company", ""),
                     "location": job.get("location", ""),
