@@ -1,4 +1,4 @@
-version: '3.8'
+name: jobsfinder
 
 services:
   web:
@@ -17,6 +17,8 @@ services:
       - POSTGRES_PASSWORD=1234r
       - POSTGRES_HOST=db
       - SELENIUM_HOST=chrome
+    networks:
+      - app_network
 
   db:
     image: postgres:15
@@ -26,14 +28,36 @@ services:
       - POSTGRES_DB=jobs
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234r
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=rayen08yako@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=1234r
+    depends_on:
+      - db
+    networks:
+      - app_network
 
   chrome:
     image: selenium/standalone-chrome:latest
-    container_name: chrome
     ports:
       - "4444:4444"
       - "7900:7900"
     shm_size: "2g"
+    networks:
+      - app_network
 
 volumes:
   postgres_data:
+
+
+networks:
+  app_network:
+    driver: bridge
