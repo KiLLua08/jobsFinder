@@ -14,9 +14,6 @@ eggs/
 venv/
 ENV/
 
-# uv
-uv.lock
-
 # Django
 *.log
 db.sqlite3
