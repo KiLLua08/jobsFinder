@@ -9,14 +9,18 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - chrome
+      db:
+        condition: service_healthy
+      chrome:
+        condition: service_healthy
     environment:
       - POSTGRES_DB=jobs
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234r
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_HOST=db
       - SELENIUM_HOST=chrome
+      - DEBUG=False
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web
     networks:
       - app_network
 
@@ -27,9 +31,14 @@ services:
     environment:
       - POSTGRES_DB=jobs
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234r
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
 
@@ -38,10 +47,11 @@ services:
     ports:
       - "5050:80"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=rayen08yako@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=1234r
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app_network
 
@@ -51,12 +61,17 @@ services:
       - "4444:4444"
       - "7900:7900"
     shm_size: "2g"
+    mem_limit: "2g"
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
-
 
 networks:
   app_network:

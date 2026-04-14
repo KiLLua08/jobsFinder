@@ -10,6 +10,7 @@ ENV UV_SYSTEM_PYTHON=1
 WORKDIR /app
 
 # Install system dependencies (if needed for psycopg2 or selenium)
+# Uncomment if build fails with psycopg2 or gcc-dependent packages
 # RUN apt-get update && apt-get install -y --no-install-recommends \
 #     libpq-dev \
 #     gcc \
@@ -19,16 +20,16 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Copy project files
-COPY pyproject.toml .
+COPY pyproject.toml uv.lock* .
 
-# Install dependencies
-# If uv.lock doesn't exist yet, we can use `uv pip install -r pyproject.toml` or similar, 
-# but `uv sync` is preferred if lock exists. 
-# For initialization without lock, we can use `uv pip install --system .` or similar logic.
-# Here we'll assume we generate lock file or install from toml.
-RUN uv pip install --system -r pyproject.toml || uv pip install --system django psycopg2-binary selenium transformers torch
+# Install dependencies using uv.lock for reproducible builds
+RUN uv sync --frozen --no-cache-dir
 
 COPY . .
+
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
 
 # Run entrypoint
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
