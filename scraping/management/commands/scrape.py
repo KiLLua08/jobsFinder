@@ -9,13 +9,14 @@ Usage:
 
 from django.core.management.base import BaseCommand
 
-from scraping.scrapers import LinkedInScraper
+from scraping.scrapers import LinkedInScraper, IndeedScraper
 from scraping.utils.db import save_jobs_to_db
 
 
 # Registry of available scrapers — add new ones here
 SCRAPER_REGISTRY = {
     "linkedin": LinkedInScraper,
+    "indeed": IndeedScraper,
 }
 
 

@@ -35,7 +35,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,13 +65,14 @@ services:
     networks:
       - app_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      test: [ "CMD", "curl", "-f", "http://localhost:4444/wd/hub/status" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
   postgres_data:
+
 
 networks:
   app_network:
