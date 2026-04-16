@@ -164,8 +164,7 @@ class IndeedScraper(BaseScraper):
         description in a <div id="jobDescriptionText"> block.
         We use Selenium (already open) to load each page, which handles
         any JavaScript-rendered content.
-<<<<<<< develop
-        
+
         ANTI-DETECTION IMPROVEMENTS:
         - Increased random delays to avoid detection
         - Added human-like mouse movement simulation (via delay variation)
@@ -173,13 +172,7 @@ class IndeedScraper(BaseScraper):
         for i, job in enumerate(jobs):
             try:
                 # Increase delays to appear more human-like
-                delay = random_delay(2, 5)  # Was 1-3, now 2-5
-=======
-        """
-        for i, job in enumerate(jobs):
-            try:
-                delay = random_delay(1, 3)
->>>>>>> main
+                delay = random_delay(2, 5)
                 logger.info(
                     f"Fetching description {i + 1}/{len(jobs)} "
                     f"for '{job['title']}' (waited {delay:.1f}s)"
@@ -187,11 +180,7 @@ class IndeedScraper(BaseScraper):
 
                 # Load the individual job page in the existing browser session
                 self.driver.get(job["link"])
-<<<<<<< develop
-                random_delay(3, 6)  # Was 2-4, now 3-6 for better JS rendering
-=======
-                random_delay(2, 4)  # Let JS render
->>>>>>> main
+                random_delay(3, 6)  # Longer wait for better JS rendering
 
                 soup = BeautifulSoup(self.driver.page_source, "html.parser")
 
