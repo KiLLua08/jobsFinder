@@ -93,3 +93,4 @@ See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for details.
 ## 📝 License
 
 This project is for personal/educational use.
+
