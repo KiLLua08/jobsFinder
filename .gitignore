@@ -1,3 +1,69 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# uv
+uv.lock
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+postgres_data/
+
+# Byte-compiled / optimized
+*.pyc
+*.pyo
+
+# Distribution
+*.tar.gz
+*.whl
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Secrets
+*.pem
+*.key
+
++++ .gitignore (修改后)
 ```
 # Python
 __pycache__/
@@ -39,6 +105,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Environment variables
 .env

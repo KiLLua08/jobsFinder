@@ -27,10 +27,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         """Define the CLI arguments this command accepts."""
+        # Get available site choices and add 'all' option
+        site_choices = list(SCRAPER_REGISTRY.keys()) + ['all']
+
         parser.add_argument(
             "--site",
             type=str,
-            choices=SCRAPER_REGISTRY.keys(),
+            choices=site_choices,
             default="linkedin",
             help="Which site to scrape (default: linkedin). Use 'all' to scrape all sites.",
         )

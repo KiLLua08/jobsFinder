@@ -9,6 +9,10 @@ dependencies = [
     "psycopg2-binary",
     "selenium",
     "beautifulsoup4",
+]
+
+[project.optional-dependencies]
+ml = [
     "transformers",
     "torch",
 ]
