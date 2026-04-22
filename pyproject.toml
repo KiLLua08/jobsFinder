@@ -9,12 +9,17 @@ dependencies = [
     "psycopg2-binary",
     "selenium",
     "beautifulsoup4",
+    "transformers>=4.40.0",
+    "torch>=2.0.0",
+    "accelerate>=0.27.0",
 ]
 
 [project.optional-dependencies]
 ml = [
     "transformers",
     "torch",
+    "accelerate",
+    "scikit-learn",
 ]
 
 [tool.uv]

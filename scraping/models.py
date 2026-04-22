@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class JobListing(models.Model):
     title = models.CharField(max_length=255)
@@ -13,6 +14,10 @@ class JobListing(models.Model):
     relevance_score = models.FloatField(null=True, blank=True)
     extracted_skills = models.JSONField(default=list, blank=True)
     nlp_processed = models.BooleanField(default=False)
+    
+    # Human Labeling for ML Fine-tuning
+    is_relevant_human_label = models.BooleanField(null=True, blank=True)
+    labeled_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} at {self.company}"

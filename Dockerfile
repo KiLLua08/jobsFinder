@@ -8,16 +8,22 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies (if needed for psycopg2 or selenium)
-# Uncomment if build fails with psycopg2 or gcc-dependent packages
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     libpq-dev \
-#     gcc \
-#     && rm -rf /var/lib/apt/lists/*
+# Install system dependencies REQUIRED for PyTorch and HuggingFace
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    gcc \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install pip dependencies from pyproject.toml
+# MAGIC TRICK: Copy 'uv' directly from its official image into our container
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Install dependencies using UV instead of pip
+# --system tells uv to install globally instead of making a venv inside the container
 COPY pyproject.toml .
-RUN pip install --no-cache-dir -e .
+# If you have a uv.lock file in your project, uncomment the next line:
+# COPY uv.lock .
+RUN uv pip install --system --no-cache -e ".[ml]"
 
 COPY . .
 
