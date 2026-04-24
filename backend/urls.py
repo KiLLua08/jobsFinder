@@ -20,4 +20,5 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/ml/", include("deep_learning.urls")),
+    path("api/", include("scraping.urls")),
 ]
