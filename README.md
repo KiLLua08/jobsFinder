@@ -66,8 +66,7 @@ jobsFinder/
 ├── deep_learning/      # ML/NLP module (WIP)
 ├── docker-compose.yml  # Docker service definitions
 ├── Dockerfile          # App container image
-├── pyproject.toml      # Python dependencies
-└── MODULE_TASKS.md     # Development task tracker
+└── pyproject.toml      # Python dependencies
 ```
 
 ## 🧪 Testing
