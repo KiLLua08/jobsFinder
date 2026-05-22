@@ -59,6 +59,15 @@ class Command(BaseCommand):
             action="store_true",
             help="Clear all existing jobs before scraping (use with caution)",
         )
+        parser.add_argument(
+            "--no-enrich",
+            action="store_true",
+            help=(
+                "Skip fetching full job descriptions (much faster). "
+                "Jobs are saved with title/company/location only — "
+                "ML classification won't work without descriptions."
+            ),
+        )
 
     def handle(self, *args, **options):
         site = options["site"]
@@ -66,6 +75,7 @@ class Command(BaseCommand):
         pages = options["pages"]
         save = not options["no_save"]
         clear_before = options["clear_before"]
+        enrich = not options["no_enrich"]
 
         # Optional: Clear database before scraping
         if clear_before:
@@ -94,7 +104,12 @@ class Command(BaseCommand):
 
             # Create the scraper from the registry
             scraper_class = SCRAPER_REGISTRY[site_name]
-            scraper = scraper_class(max_pages=pages)
+            scraper = scraper_class(max_pages=pages, enrich=enrich)
+
+            if not enrich:
+                self.stdout.write(
+                    self.style.WARNING("  ⚡ --no-enrich: skipping description fetching (fast mode)")
+                )
 
             # Run the scraper
             jobs = scraper.run(query)

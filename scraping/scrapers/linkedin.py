@@ -112,39 +112,65 @@ class LinkedInScraper(BaseScraper):
 
     def enrich_jobs(self, jobs):
         """Navigate to each job's dedicated page to scrape the full description."""
+        import time
+        import urllib.error
         import urllib.request
         from scraping.utils.anti_detection import get_random_user_agent, random_delay
 
         for i, job in enumerate(jobs):
-            try:
-                # Add a delay between resolving each job URL
-                delay = random_delay(1, 3)
-                logger.info(f"Fetching description {i+1}/{len(jobs)} for {job['title']} (waited {delay:.1f}s)")
-                
-                # We use raw urllib here because LinkedIn's bot detection 
-                # aggressively blocks Selenium Headless browsers on individual job pages,
-                # but often allows raw HTTP requests with a normal User-Agent!
-                req = urllib.request.Request(
-                    job["link"], 
-                    headers={'User-Agent': get_random_user_agent()}
-                )
-                
-                with urllib.request.urlopen(req, timeout=10) as response:
-                    page_source = response.read().decode('utf-8')
-                    
-                soup = BeautifulSoup(page_source, "html.parser")
-                
-                # The description block in public LinkedIn jobs
-                desc_div = soup.find("div", class_="show-more-less-html__markup")
-                if not desc_div:
-                    desc_div = soup.find("div", class_="description__text")
-                    
-                if desc_div:
-                    job["description"] = desc_div.get_text(separator="\n", strip=True)
-                else:
-                    logger.warning(f"Could not find description block for {job['link']}")
-                    
-            except Exception as e:
-                logger.error(f"Failed to fetch description for {job['link']}: {e}")
-                
+            fetched = False
+            for attempt in range(1, 4):  # up to 3 attempts per job
+                try:
+                    delay = random_delay(2, 5)
+                    logger.info(
+                        f"Fetching description {i+1}/{len(jobs)} for {job['title']} "
+                        f"(attempt {attempt}, waited {delay:.1f}s)"
+                    )
+
+                    req = urllib.request.Request(
+                        job["link"],
+                        headers={
+                            'User-Agent': get_random_user_agent(),
+                            'Accept-Language': 'en-US,en;q=0.9',
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        }
+                    )
+
+                    with urllib.request.urlopen(req, timeout=15) as response:
+                        page_source = response.read().decode('utf-8')
+
+                    soup = BeautifulSoup(page_source, "html.parser")
+
+                    desc_div = soup.find("div", class_="show-more-less-html__markup")
+                    if not desc_div:
+                        desc_div = soup.find("div", class_="description__text")
+
+                    if desc_div:
+                        job["description"] = desc_div.get_text(separator="\n", strip=True)
+                    else:
+                        logger.warning(f"Could not find description block for {job['link']}")
+
+                    fetched = True
+                    break  # success — move to next job
+
+                except urllib.error.HTTPError as e:
+                    if e.code == 429:
+                        # Rate limited — back off exponentially before retrying
+                        wait = 30 * attempt  # 30s, 60s, 90s
+                        logger.warning(
+                            f"429 Too Many Requests for {job['title']}. "
+                            f"Backing off {wait}s before retry {attempt}/3..."
+                        )
+                        time.sleep(wait)
+                    else:
+                        logger.error(f"HTTP {e.code} fetching description for {job['link']}: {e}")
+                        break  # non-retryable HTTP error
+
+                except Exception as e:
+                    logger.error(f"Failed to fetch description for {job['link']}: {e}")
+                    break  # non-retryable error
+
+            if not fetched:
+                logger.warning(f"Skipping description for {job['title']} after all attempts failed")
+
         return jobs

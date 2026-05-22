@@ -51,14 +51,17 @@ class BaseScraper(ABC):
     - parse_job_cards(page_source) → extract jobs from HTML
     """
 
-    def __init__(self, max_pages=3, max_retries=3):
+    def __init__(self, max_pages=3, max_retries=3, enrich=True):
         """
         Args:
             max_pages:   How many pages of results to scrape (default 3)
             max_retries: How many times to retry a failed page (default 3)
+            enrich:      Whether to fetch full descriptions for each job (default True).
+                         Set to False for a fast scrape that only gets titles/companies.
         """
         self.max_pages = max_pages
         self.max_retries = max_retries
+        self.enrich = enrich
         self.driver = None  # Will hold the Selenium WebDriver instance
 
     # ── Browser Setup & Teardown ─────────────────────────────────
@@ -223,7 +226,8 @@ class BaseScraper(ABC):
                     break
 
                 # Fetch extra details (like full descriptions) for these jobs
-                jobs = self.enrich_jobs(jobs)
+                if self.enrich:
+                    jobs = self.enrich_jobs(jobs)
 
                 all_jobs.extend(jobs)
 
