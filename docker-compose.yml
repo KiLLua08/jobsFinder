@@ -20,13 +20,13 @@ services:
       - POSTGRES_HOST=db
       - SELENIUM_HOST=chrome
       - DEBUG=False
-      - ALLOWED_HOSTS=localhost,127.0.0.1,web
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,web:8000
     networks:
       - app_network
 
   ml-worker:
     build: .
-    command: tail -f /dev/null 
+    command: tail -f /dev/null
     volumes:
       - .:/app
       - ~/.cache/huggingface:/home/appuser/.cache/huggingface
@@ -89,9 +89,25 @@ services:
       timeout: 5s
       retries: 5
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - web
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    networks:
+      - app_network
+
 volumes:
   postgres_data:
 
 networks:
   app_network:
     driver: bridge
+

@@ -23,4 +23,6 @@ ml = [
 ]
 
 [tool.uv]
-dev-dependencies = []
+dev-dependencies = [
+    "hypothesis>=6.100.0",
+]

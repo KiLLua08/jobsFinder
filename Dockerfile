@@ -18,11 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # MAGIC TRICK: Copy 'uv' directly from its official image into our container
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-# Install dependencies using UV instead of pip
-# --system tells uv to install globally instead of making a venv inside the container
-COPY pyproject.toml .
-# If you have a uv.lock file in your project, uncomment the next line:
-# COPY uv.lock .
+# Install dependencies using UV with the lock file for reproducible builds
+COPY pyproject.toml uv.lock ./
 RUN uv pip install --system --no-cache -e ".[ml]"
 
 COPY . .
