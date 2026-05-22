@@ -1,3 +1,8 @@
+import type { ScrapeJob } from "./types";
+
+// In Docker the browser always accesses the app via localhost.
+// Django runs on port 8000, accessible directly from the browser.
+// NEXT_PUBLIC_ vars are embedded at build time and available in the browser.
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function fetchAPI<T>(
@@ -26,7 +31,7 @@ export const api = {
       if (params?.skill) query.set("skill", params.skill);
       if (params?.relevant !== undefined) query.set("relevant", String(params.relevant));
       if (params?.page) query.set("page", String(params.page));
-      return fetchAPI<any[]>(`/api/jobs/?${query.toString()}`);
+      return fetchAPI<{ results: any[]; total: number; page: number; page_size: number; total_pages: number }>(`/api/jobs/?${query.toString()}`);
     },
     get: (id: number) => fetchAPI<any>(`/api/jobs/${id}/`),
     label: (id: number, isRelevant: boolean) =>
@@ -35,6 +40,17 @@ export const api = {
         body: JSON.stringify({ is_relevant: isRelevant }),
       }),
     unlabeled: () => fetchAPI<any[]>("/api/jobs/unlabeled/"),
+  },
+  scrape: {
+    trigger: (query: string, site: string = "linkedin", pages: number = 3, enrich: boolean = true) =>
+      fetchAPI<ScrapeJob>("/api/scrape/", {
+        method: "POST",
+        body: JSON.stringify({ query, site, pages, enrich }),
+      }),
+    status: (id: number) =>
+      fetchAPI<ScrapeJob>(`/api/scrape/${id}/status/`),
+    history: () =>
+      fetchAPI<ScrapeJob[]>("/api/scrape/"),
   },
   ml: {
     stats: () => fetchAPI<any>("/api/ml/stats/"),

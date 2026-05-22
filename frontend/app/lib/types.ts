@@ -1,3 +1,16 @@
+export interface ScrapeJob {
+  id: number;
+  status: "pending" | "running" | "completed" | "failed";
+  query: string;
+  site: string;
+  pages: number;
+  jobs_found: number | null;
+  started_at: string | null;
+  finished_at: string | null;
+  error_message: string | null;
+  created_at: string;
+}
+
 export interface JobListing {
   id: number;
   title: string;
