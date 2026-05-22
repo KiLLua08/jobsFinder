@@ -20,7 +20,7 @@ services:
       - POSTGRES_HOST=db
       - SELENIUM_HOST=chrome
       - DEBUG=False
-      - ALLOWED_HOSTS=localhost,127.0.0.1,web,web:8000
+      - ALLOWED_HOSTS=localhost,127.0.0.1,web,localhost:8000
     networks:
       - app_network
 
