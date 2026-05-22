@@ -92,11 +92,29 @@ def ml_health(request: HttpRequest) -> JsonResponse:
     cache = ModelCache()
     classifier_loaded = cache._classifier is not None
     ner_loaded = cache._ner is not None
+
+    # Include active model metadata if available.
+    active_model = None
+    try:
+        from deep_learning.models import MLModelMetadata
+        meta = MLModelMetadata.objects.filter(model_type="classifier", is_active=True).first()
+        if meta:
+            active_model = {
+                "name": meta.name,
+                "version": meta.version,
+                "accuracy": meta.accuracy,
+                "f1_score": meta.f1_score,
+                "training_date": meta.training_date.isoformat() if meta.training_date else None,
+            }
+    except Exception:
+        pass
+
     return JsonResponse(
         {
             "status": "ok",
             "cache_initialized": cache.initialized,
             "classifier_loaded": classifier_loaded,
             "ner_loaded": ner_loaded,
+            "active_model": active_model,
         }
     )
